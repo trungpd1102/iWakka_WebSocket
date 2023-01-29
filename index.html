@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Socket Client1</title>
+		<script src="/socket.io/socket.io.js"></script>
+	</head>
+	<body>
+		Client1
+		<input type="text" id="input-text" />
+		<button onclick="sendData()">Send Data</button>
+		<div>
+			<ul id="datas">
+				Datas:
+			</ul>
+		</div>
+	</body>
+	<script>
+		const socket = io();
+		const room = 'room1';
+		const dataList = document.querySelector('#datas');
+
+		socketListeners();
+
+		function socketListeners() {
+			socket.on('connected', () => {
+				console.log('connected');
+				socket.emit('join', room);
+			});
+			socket.on('data-delivery', (dataReceived) => {
+				console.log('received data', dataReceived);
+
+				const item = document.createElement('li');
+				item.textContent = dataReceived.data;
+
+				dataList.appendChild(item);
+			});
+		}
+
+		function sendData() {
+			const input = document.getElementById('input-text');
+
+			socket.emit('data-send', { room: room, data: input.value });
+
+			input.value = '';
+		}
+	</script>
+</html>
